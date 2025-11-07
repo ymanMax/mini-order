@@ -1,0 +1,162 @@
+<!--pages/orderList/orderList.wxml-->
+<wxs src="../../utils/magic.wxs" module="magic" />
+<block wx:if="{{isLogin}}">
+  <view class="tabs">
+    <van-dropdown-menu active-color="{{mainColor}}">
+      <van-dropdown-item value="{{ value1 }}" options="{{ option1 }}" bind:change="OrderStatusDropdown" />
+      <van-dropdown-item value="{{ value2 }}" options="{{ option2 }}" bind:change="orderColumnDropdown" />
+    </van-dropdown-menu>
+  </view>
+</block>
+
+<view class="container">
+  <block wx:if="{{isLogin}}">
+    <block wx:if="{{orderlist.length>0}}">
+      <view class="lists" wx:for="{{orderlist}}" wx:key="orderlist">
+        <view class="item" bindtap="openDoor" data-no="{{item.orderNo}}">
+          <view class="top">
+            <view class="left">
+              <image src="../static/icon/stoer.png" />
+              <text class="text">{{item.storeName}}</text>
+            </view>
+            <text class="right">查看详情</text>
+          </view>
+          <view class="highlight">
+            <view class="left">
+              <image src="../static/icon/time-icon.png" />
+              <text>{{item.fullTime}}</text>
+            </view>
+            <view class="right">¥<text>{{item.payPrice}}</text></view>
+          </view>
+          <view class="info-line">
+            <text class="bold">场地名称：</text>
+            <text>{{item.roomName}}</text>
+          </view>
+          <view class="info-line">
+            <text class="bold">订单编号：</text>
+            <text catch:tap="copyOrderNo" data-order="{{item.orderNo}}">{{item.orderNo}}</text>
+            <!-- <view class="copy">复制</view> -->
+          </view>
+          <view class="info-line">
+            <text class="bold">订单状态：</text>
+            <text>{{item.status==0?'未开始':item.status==1?'进行中':item.status==2?'已完成':item.status==3?'已取消':'未知'}}</text>
+          </view>
+          <view class="info-line" wx:if="{{item.deposit}}">
+            <text class="bold">支付押金：￥</text>
+            <view class="price">{{item.deposit}}
+              <block wx:if="{{item.depositRefund}}">
+                (已退回)
+              </block>
+            </view>
+          </view>
+          <view class="info-line  display-space">
+            <view>
+              <text class="bold">支付方式：</text>
+              <text>{{item.payType===0?'管理员':item.payType===1?'微信':item.payType===2?'余额':item.payType===3?'团购':item.payType===4?'套餐':'预订'}}</text>
+            </view>
+            <block wx:if="{{item.status==0}}">
+              <text class="right" catch:tap="cancelOrder" data-info="{{item}}">申请退款</text>
+            </block>
+            <!-- <view class="btn">详情</view> -->
+          </view>
+          <view class="info-line" wx:if="{{item.refundPrice}}">
+            <text class="bold">订单退款：</text>
+            <text>￥{{item.refundPrice}}</text>
+          </view>
+          <view class="info-line display-space">
+            <view class="discount-tag" wx:if="{{item.bargainPrice}}">
+              <image src="../static/icon/discount-bg.png" />
+              <view>已砍价<text>¥{{item.bargainPrice}}</text>元</view>
+            </view>
+            <view wx:else></view>
+            <!-- <view class="btn" catch:tap="orderAgain" data-info="{{item}}" wx:if="{{item.status === 2 || item.status === 3}}">再次下单</view> -->
+          </view>
+          <block wx:if="{{item.status==0||item.status==1}}">
+            <view class="status-tag" catch:tap="showOrderQr" data-no="{{item.orderNo}}">
+              <iconfont name="erweima1" size="50"></iconfont>
+            </view>
+          </block>
+          <block wx:else="">
+            <image class="status-tag" src="../static/icon/status{{item.status}}.png" />
+          </block>
+        </view>
+      </view>
+      <view wx:if="{{!canLoadMore}}" class="notes">
+        <image src="../static/icon/more.png" />
+        到底了，没有更多订单啦~
+      </view>
+    </block>
+    <block wx:else>
+      <!-- 无订单和未登录 -->
+      <view class="nodata">- 暂无订单 -</view>
+    </block>
+  </block>
+  <block wx:else>
+    <view class="containerlogin">
+      <view class="photo">
+        <view class="img">
+          <image src="/logo.png" mode="widthFix" />
+        </view>
+        <view class="name">{{appName}}</view>
+      </view>
+      <button hover-class="button-click" class="loginBtn bg-primary" bind:tap="phone">登录后查看</button>
+    </view>
+  </block>
+</view>
+<!-- 取消订单弹窗 -->
+<van-dialog use-slot title="取消订单" show="{{ cancelOrderShow }}" show-cancel-button cancel-button-text="暂不取消" confirm-button-text="确认取消" bind:confirm="cancelConfirm">
+  <view class="dialog">
+    <view class="item">
+      <label>当前位置：</label>
+      <text>{{orderInfo.roomName}}（{{orderInfo.roomType===1?'小包':orderInfo.roomType===2?'中包':orderInfo.roomType===3?'大包':orderInfo.roomType===4?'豪包':orderInfo.roomType===5?'商务包':orderInfo.roomType===6?'斯洛克':orderInfo.roomType===7?'中式黑八':'美式球桌'}}）</text>
+    </view>
+    <view class="item">
+      <label>开始时间：</label><text>{{orderInfo.startTime}}</text>
+    </view>
+    <view class="item">
+      <label>结束时间：</label><text>{{orderInfo.endTime}}</text>
+    </view>
+    <view class="item">
+      <view class="color-attention note">温馨提示：取消后，费用将按原支付方式退回！</view>
+    </view>
+  </view>
+</van-dialog>
+<!-- 取消订单成功弹窗 -->
+<van-dialog use-slot title="订单取消成功" show="{{ cancelOrderSuccess }}" confirm-button-text="好的">
+  <view class="dialog">
+    <view class="item">
+      <label>已为您成功取消下列订单</label>
+    </view>
+    <view class="item">
+      <label>当前位置：</label>
+      <text>{{orderInfo.roomName}}（{{orderInfo.roomType===1?'小包':orderInfo.roomType===2?'中包':orderInfo.roomType===3?'大包':orderInfo.roomType===4?'豪包':orderInfo.roomType===5?'商务包':orderInfo.roomType===6?'斯洛克':orderInfo.roomType===7?'中式黑八':'美式球桌'}}）</text>
+    </view>
+    <view class="item">
+      <label>预约时间：</label><text>{{orderInfo.startTime}}~{{orderInfo.endTime}}</text>
+    </view>
+    <view class="item">
+      <view class="color-attention note">取消成功，费用已返还到原支付方式！</view>
+    </view>
+  </view>
+</van-dialog>
+<view wx:if="{{showModal}}" class="modal-mask" catchtouchmove="preventTouch">
+  <view class="modal-content" catchtap="true">
+    <!-- 标题 -->
+    <view class="modal-title">请将二维码对准识别区</view>
+
+    <!-- 二维码容器，确保强制居中 -->
+    <view class="qrcode-canvas-wrapper">
+      <canvas class="qrcode-canvas" canvas-id="myQrcode"></canvas>
+    </view>
+
+    <!-- 操作提示 -->
+    <view class="guide-section">
+      <image src="/img/zhiyin.jpg" class="guide-image" mode="aspectFit" />
+    </view>
+    <!-- 关闭按钮 -->
+    <button class="close-btn" bindtap="closeModal">关闭</button>
+  </view>
+</view>
+
+
+

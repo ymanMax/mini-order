@@ -1,0 +1,208 @@
+<view class="logo-top" style="padding-top:{{statusBarHeight+10}}px">
+  <image src="../static/img/user-bg.png" />
+  <view class="name">
+    个人中心
+  </view>
+</view>
+<view class="container">
+  <view class="top">
+    <block wx:if="{{isLogin}}">
+      <button hover-class="button-click" class="userInfo" bind:tap="gotosetuserinfo">
+        <view class="left">
+          <view class="photo">
+            <image src="{{userinfo.avatar?userinfo.avatar:'/logo.png'}}" mode="widthFix"></image>
+          </view>
+          <view class="info">
+            <view class="name">{{userinfo.nickname.length?userinfo.nickname:"暂无昵称"}}</view>
+            <view class="phone">{{userinfo.mobile}}</view>
+          </view>
+        </view>
+        <image class="setting" src="../static/icon/setting.png" />
+      </button>
+    </block>
+    <block wx:else>
+      <navigator hover-class="button-click" class="userInfo" url="../login/login">
+        <view class="left">
+          <!-- <image class="photo" src="/logo.png"></image> -->
+          <!-- <button hover-class="button-click"  class="photo" src="/logo.png" bindgetphonenumber="phone" open-type="getPhoneNumber">地图</button> -->
+          <image class="photo" src="/logo.png"></image>
+          <view class="info">
+            <view class="name">点击登录</view>
+          </view>
+        </view>
+        <iconfont name="right"></iconfont>
+      </navigator>
+    </block>
+    <navigator class="balance-box" wx:if="{{isLogin}}" url="{{isLogin?'../getBalance/getBalance':'../login/login'}}">
+      <view class="item">
+        <iconfont name="yue" size="28"></iconfont>
+        <view class="money">{{userinfo.balance}}</view>
+      </view>
+      <view class="item">
+        <iconfont name="zeng" size="28"></iconfont>
+        <view class="money">{{userinfo.giftBalance}}</view>
+      </view>
+    </navigator>
+    <!-- 账户 -->
+    <!-- <view class="account" wx:if="{{isLogin}}">
+      <navigator class="item" url="{{isLogin?'../coupon/coupon':'../login/login'}}">
+        <view class="num">{{userinfo.couponCount}}</view>
+        <view>优惠卡券</view>
+      </navigator>
+    </view> -->
+  </view>
+  <view class="info-container">
+    <view class="account-box" wx:if="{{isLogin}}">
+      <view class="top">我的账户</view>
+      <view class="account-bottom">
+        <view bind:tap="goScore">
+          <text class="num">0</text>
+          <text>积分</text>
+        </view>
+        <!-- <navigator url="/packageA/pages/myPackCard/index">
+          <text class="num">{{cardList.length}}</text>
+          <text>包时卡</text>
+        </navigator> -->
+        <view bind:tap="goCoupon">
+          <text class="num">{{userinfo.couponCount}}</text>
+          <text>优惠券</text>
+        </view>
+      </view>
+    </view>
+    <!-- <navigator class="points-box">
+      <image src="../static/icon/points-center.png"/>
+      <text>积分商城筹备中，敬请期待！</text>
+    </navigator> -->
+    <view class="line-box">
+      <navigator class="item" url="/pages/recharge/recharge" open-type="switchTab">
+        <iconfont name="taocan" size="32"></iconfont>
+        <text style="margin-left:15rpx">优惠中心</text>
+      </navigator>
+      <navigator class="item" url="{{isLogin?'../join/join':'../login/login'}}">
+        <iconfont name="jiaruwomen" size="32"></iconfont>
+        <text style="margin-left:15rpx">加入我们</text>
+      </navigator>
+    </view>
+    <view class="control-box">
+      <view class="top">
+        常用功能
+      </view>
+      <view class="control">
+        <navigator class="item" url="/pages/orderList/orderList" open-type="switchTab">
+          <iconfont name="dingdan" size="32" color="#000"></iconfont>
+          <text>预定订单</text>
+        </navigator>
+        <navigator class="item" url="{{isLogin?'../productOrder/productOrder':'../login/login'}}">
+          <iconfont name="shangpindingdan1" size="32" color="#000"></iconfont>
+          <text>商品订单</text>
+        </navigator>
+        <navigator class="item" url="{{isLogin?'../myBalance/myBalance':'../login/login'}}">
+          <iconfont name="zhangdan" size="32" color="#000"></iconfont>
+          <text>余额账单</text>
+        </navigator>
+        <navigator class="item" url="../coupon/coupon">
+          <iconfont name="youhuiquan" size="32" color="#000"></iconfont>
+          <text>我的优惠券</text>
+        </navigator>
+        <!-- <navigator class="item" url="/packageA/pages/myPackCard/index">
+          <image src="../static/icon/pack.png"/>
+          <text>包时卡</text>
+        </navigator> -->
+        <navigator class="item" url="../yeepay/index" wx:if="{{isLogin}}">
+          <iconfont name="youhuikaquan" size="32" color="#000"></iconfont>
+          <text>收款账户</text>
+        </navigator>
+        <navigator class="item" url="../help/help">
+          <iconfont name="changjianwentixiangguanwenti" size="32" color="#000"></iconfont>
+          <text>常见问题</text>
+        </navigator>
+         <navigator class="item" url="../searchOrder/index">
+          <iconfont name="sousuo" size="32" color="#000"></iconfont>
+          <text>订单查询</text>
+        </navigator>
+        <!-- <navigator class="item" url="../couponActive/index?couponId=224">
+          <iconfont name="changjianwentixiangguanwenti" size="32" color="#000"></iconfont>
+          <text>常见问题</text>
+        </navigator> -->
+      </view>
+    </view>
+    <!-- 按钮菜单 -->
+    <block wx:if="{{isLogin && userinfo.userType!= 11}}">
+      <view class="control-box">
+        <view class="top">功能专区</view>
+        <view class="control" wx:if="{{userinfo.userType!= 14}}">
+          <navigator class="item" url="/packageA/pages/setStore/setStore">
+            <iconfont name="mendian" size="32" color="#5AAB6E"></iconfont>
+            <view>门店管理</view>
+          </navigator>
+          <navigator class="item" url="/packageA/pages/roomList/roomList">
+            <iconfont name="fangjian" size="32" color="#5AAB6E"></iconfont>
+            <view>房间控制</view>
+          </navigator>
+          <navigator class="item" url="/packageA/pages/SetOrder/SetOrder">
+            <iconfont name="dingdan1" size="32" color="#5AAB6E"></iconfont>
+            <view>订单管理</view>
+          </navigator>
+          <navigator class="item" url="/packageA/pages/setVip/setVip">
+            <iconfont name="huiyuan" size="32" color="#5AAB6E"></iconfont>
+            <view>用户管理</view>
+          </navigator>
+          <navigator class="item" url="/packageA/pages/scanQr/scanQr">
+            <iconfont name="tuangou" size="32" color="#5AAB6E"></iconfont>
+            <view>团购验券</view>
+          </navigator>
+          <navigator class="item" url="/packageA/pages/taskManager/taskManager">
+            <iconfont name="baojie" size="32" color="#5AAB6E"></iconfont>
+            <view>保洁订单</view>
+          </navigator>
+          <navigator class="item" url="/packageA/pages/statics/statics">
+            <iconfont name="tongjitu" size="32" color="#5AAB6E"></iconfont>
+            <view>数据统计</view>
+          </navigator>
+          <navigator class="item" url="/packageA/pages/addLock/addLock">
+            <iconfont name="e23lock" size="32" color="#5AAB6E"></iconfont>
+            <text>门锁配置</text>
+          </navigator>
+        </view>
+        <view class="control" wx:else>
+          <!-- 保洁端 -->
+          <navigator class="item" url="/packageA/pages/task/task">
+            <iconfont name="iov-store" size="32" color="#5AAB6E"></iconfont>
+            <view>任务大厅</view>
+          </navigator>
+          <navigator class="item" url="/packageA/pages/roomList/roomList">
+            <iconfont name="shebeiguanli" size="32" color="#5AAB6E"></iconfont>
+            <view>房间状态</view>
+          </navigator>
+          <navigator class="item" url="/packageA/pages/taskStatics/taskStatics">
+            <iconfont name="duiqifangshi2" size="32" color="#5AAB6E"></iconfont>
+            <view>任务统计</view>
+          </navigator>
+        </view>
+      </view>
+    </block>
+  </view>
+  <view class="version">版本:25.10.29</view>
+</view>
+
+<view wx:if="{{showExpireModal}}" class="expire-mask">
+  <view class="expire-modal">
+    <view class="expire-title">到期提醒</view>
+    <view class="expire-info">请及时联系管理员进行续期</view>
+    <scroll-view scroll-y class="expire-list">
+      <block wx:for="{{serviceInfo}}" wx:key="id">
+        <view class="expire-item" wx:if="{{item.show}}">
+          <view class="name-box">
+            <text class="name-type">{{item.type==1?'租户':item.type==2?'门店':item.type==3?'团购核销':'未知'}}</text>
+            <text class="name">{{item.name}}</text>
+          </view>
+          <text class="date">到期时间{{item.expireDate}}</text>
+        </view>
+      </block>
+    </scroll-view>
+
+    <view class="expire-footer">
+      <button class="btn primary" bindtap="closeExpireModal">我知道了</button>
+    </view>
+  </view>
+</view>

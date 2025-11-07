@@ -1,0 +1,9 @@
+{
+    "navigationStyle": "custom",
+    "navigationBarBackgroundColor": "#5AAB6E",
+    "navigationBarTextStyle": "white",
+    "usingComponents": {
+      "van-datetime-picker": "@vant/weapp/datetime-picker/index"
+    }
+}
+  

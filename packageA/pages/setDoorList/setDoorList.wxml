@@ -1,0 +1,70 @@
+<!-- pages/setDoorList/setDoorList.wxml -->
+<wxs src="../../../utils/magic.wxs" module="magic" />
+<view class="container" style="{{isIpx?'padding-bottom:168rpx':'padding-bottom:120rpx'}}">
+  <block wx:if="{{doorList.length}}">
+    <view class="list">
+      <!-- <view class="item doing" wx:for="{{doorList}}" wx:key="item" class="{{item.status==0?'item disabled':item.status==1?'item undo':item.status==2?'item clean':item.status==3?'item doing':'item yuyue'}}"> -->
+      <view class="item doing" wx:for="{{doorList}}" wx:key="item" class="item">
+        <view class="top">
+          <view class="name">
+            {{item.roomId}}-
+            {{item.roomName}}
+            <text class="type">（{{item.type===0?'特价包':item.type===1?'小包':item.type===2?'中包':item.type===3?'大包':item.type===4?'豪包':item.type===5?'商务包':item.type===6?'斯洛克':item.type===7?'中式黑八':'美式球桌'}}）</text>
+          </view>
+          <view class="price color-attention">￥{{item.price}}/小时</view>
+        </view>
+        <!-- <view class="tags">
+          <block wx:for="{{magic.split(item.label)}}" wx:for-item="labelitem" wx:key="label">
+            <view class="tag">{{labelitem}}</view>
+          </block>
+        </view> -->
+        <view class="info">
+          <view class="line" style="width: 100%;">
+            <label>禁用时间：</label>
+            <text wx:if="{{item.banTimeStart}}">{{item.banTimeStart}} - {{item.banTimeEnd}}</text>
+          </view>
+          <view class="delRoom" bind:tap="delRoom" data-id="{{item.roomId}}">删除</view>
+        </view>
+        <view class="info">
+          <view class="line">
+            <label>当前状态：</label>
+            <text>{{item.status==0?'禁用':item.status==1?'空闲中':item.status==2?'待清洁':item.status==3?'使用中':'已预约'}}</text>
+          </view>
+          <view class="line">
+            <text wx:if="{{item.orderTime}}">{{item.orderTime}}</text>
+          </view>
+        </view>
+        <view class="btns">
+          <view class="line2">
+            <block wx:if="{{item.status==0}}">
+              <view class="btn yellow" bindtap="disableRoom" data-roomid="{{item.roomId}}">
+                启用房间
+              </view>
+            </block>
+            <block wx:else="">
+              <view class="btn warning" bindtap="disableRoom" data-roomid="{{item.roomId}}">
+                禁用房间
+              </view>
+            </block>
+            <navigator class="btn warning" url="../setDoorInfo/setDoorInfo?roomId={{item.roomId}}&&storeId={{storeId}}">
+              修改信息
+            </navigator>
+            <view class="btn yellow" data-src="{{item.qrCode}}" bind:tap="previewImage">
+              预定二维码
+            </view>
+            <view class="btn yellow" data-src="{{item.renewCode}}" bind:tap="previewImage">
+              续费二维码
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+  <block wx:else>
+    <view class="nodata">暂无数据</view>
+  </block>
+</view>
+<!-- 底部按钮 -->
+<navigator url="../setDoorInfo/setDoorInfo?storeId={{storeId}}" class="bottom bg-primary {{isIpx?'fix-iphonex-button':''}}">
+  新增房间
+</navigator>

@@ -1,0 +1,20 @@
+page {
+    --main-color: #5AAB6E;
+    --main-color-shadow: #4b905c;
+    --main-green: #6AB37C;
+    --main-red: #F8525E;
+    --main-blue: #5abdff;
+    --main-gray: #a4a4a4;
+    --main-orange: #ffbb01;
+}
+.theme-bg-primary {
+    background: var(--main-color) !important;
+}
+
+.theme-color-primary {
+    color: var(--main-color) !important;
+}
+
+.theme-color-shadow {
+    box-shadow: var(--main-color-shadow) 0rpx 0rpx 30rpx;
+}

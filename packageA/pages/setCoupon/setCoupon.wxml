@@ -1,0 +1,113 @@
+<!--pages/setCoupon/setCoupon.wxml-->
+<view class="tabs">
+  <van-dropdown-menu active-color="{{mainColor}}">
+    <van-dropdown-item value="{{ type }}" options="{{ types }}"  bind:change="typeDropdown" />
+  </van-dropdown-menu>
+</view>
+
+<view class="container" style="{{isSelect?'padding-bottom:0;':isIpx?'padding-bottom:188rpx':'padding-bottom:120rpx'}}">
+<block wx:if="{{list.length}}">
+  <view class="list">
+    <view class="item" wx:for="{{list}}" wx:key="item">
+      <!-- 红色渐变背景 -->
+      <block wx:if="{{item.type===1}}">
+        <view class="gradient-bg gradient-red"></view>
+      </block>
+      <!-- 黄色渐变背景 -->
+      <block wx:if="{{item.type===2}}">
+        <view class="gradient-bg gradient-yellow"></view>
+      </block>
+      <!-- 蓝色渐变背景 -->
+      <block wx:if="{{item.type===3}}">
+        <view class="gradient-bg gradient-blue"></view>
+      </block>
+      
+      <view class="info">
+        <view class="left">
+          <view class="name">{{item.couponName}}</view>
+          <!-- <view class="text">适用门店：{{item.storeName}}</view> -->
+          <view class="text">包间限制：{{item.roomType===1?'小包':item.roomType===2?'中包':item.roomType===3?'大包':item.roomType===4?'豪包':item.roomType===5?'商务包':item.roomType===6?'斯洛克':item.roomType===7?'中式黑八':item.roomType===8?'美式球桌':'不限制'}}</view>
+          <view class="text">抵扣额度：
+              <text wx:if="{{item.type==2}}">{{item.price}}元</text>
+              <text wx:else>{{item.price}}小时</text></view>
+          <view class="text">使用门槛：
+              <text wx:if="{{item.type!=2}}">满{{item.minUsePrice}}元可用</text>
+              <text wx:else>满{{item.minUsePrice}}小时可用</text></view>
+          <view class="text">过期时间：{{item.expriceTime}}</view>
+          <view class="text">状态：<text class="{{item.status===0?'normal':'expired'}}">{{item.status===0?'可使用':item.status===1?'已使用':'已过期'}}</text></view>
+        </view>
+        <view class="right">
+          <view class="btns" wx:if="{{isSelect}}">
+            <button hover-class="button-click"  class="btn bg-primary" bindtap="select" data-info="{{item.couponId}}">选择</button>
+          </view>
+          <!-- 优惠券管理 -->
+          <view class="btns" wx:else>
+            <navigator class="btn primary" url="../setVip/setVip?isSelect=1&&couponId={{item.couponId}}">赠送用户</navigator>
+            <navigator class="btn yellow" url="../setCouponInfo/setCouponInfo?couponId={{item.couponId}}&storeId={{storeId}}&storeName={{storeName}}">修改设置</navigator>
+          </view>
+        </view>
+      </view>
+      <view class="buttom">
+        <button class="btn" bind:tap="deleteCoupon" data-id="{{item.couponId}}">删除</button>
+        <button class="btn" bind:tap="openActive" data-id="{{item.couponId}}" data-name="{{item.couponName}}">发起活动</button>
+        <button class="btn" bind:tap="stopActice" data-id="{{item.couponId}}">结束活动</button>
+        <button class="btn" open-type="share" data-id="{{item.couponId}}">分享领券</button>
+      </view>
+    </view>
+  </view>
+</block>
+<block wx:else>
+  <view class="nodata">暂无数据</view>
+</block>
+</view>
+
+<!-- 底部按钮 -->
+<view class="bt">
+  <navigator wx:if="{{!isSelect}}" url="../setCouponInfo/setCouponInfo?storeId={{storeId}}&storeName={{storeName}}" class="bottom bg-primary {{isIpx?'fix-iphonex-button transparent':''}}">添加优惠券</navigator>
+</view>
+
+<!-- 活动弹窗 -->
+<van-dialog
+  use-slot
+  title="发起活动"
+  show="{{ activeShow }}"
+  show-cancel-button
+  bind:confirm="saveActive"
+  bind:cancel="cancelActice" 
+  before-close="{{beforeCloseFunction}}"
+  confirm-button-color="{{mainColor}}"
+>
+  <view class="dialog">
+    <van-cell-group>
+      <van-field
+        label="优惠券名称："
+        model:value="{{couponName}}"
+        readonly
+      >
+      </van-field>
+      <van-field
+        model:value="{{activeName}}"
+        label="活动名称："
+        placeholder="请输入一个活动的名称"
+      />
+      <van-field
+        model:value="{{num}}"
+        label="总数量："
+        input-type="number"
+        placeholder="请输入1-99999的数字"
+        border="{{ false }}"
+      />
+      <van-field wx:if="{{balanceNum}}"
+        label="剩余数量："
+        model:value="{{balanceNum}}"
+        readonly
+      />
+      <van-cell title="截止时间">
+        <picker mode="multiSelector" bindchange="bindMultiPickerChange" bindcolumnchange="bindMultiPickerColumnChange" value="{{multiIndex}}" range="{{multiArray}}">
+          {{endTime}}
+        </picker>
+      </van-cell>
+    </van-cell-group>
+  </view>
+</van-dialog>
+
